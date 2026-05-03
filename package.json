@@ -10,11 +10,13 @@
     "db:push": "prisma db push",
     "seed": "tsx prisma/seed.ts",
     "sync-photos": "tsx scripts/sync-photos.ts",
+    "upload-images": "tsx scripts/upload-images-to-storage.ts",
     "create-admin": "tsx scripts/create-admin.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@supabase/supabase-js": "^2.105.1",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.3",
     "next": "^15.1.6",
