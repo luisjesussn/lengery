@@ -312,7 +312,7 @@ export async function removeHeaderLogoAction(): Promise<void> {
   revalidatePath("/", "layout");
 }
 
-const MAX_HERO_BYTES = 8 * 1024 * 1024;
+const MAX_HERO_BYTES = 4 * 1024 * 1024;
 
 export async function uploadHeroImageAction(formData: FormData): Promise<void> {
   await requireAuth();

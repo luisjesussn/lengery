@@ -1,18 +1,29 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import SubmitButton from "@/components/admin/SubmitButton";
 import imgStyles from "@/components/admin/image-upload.module.css";
 
 type Props = {
   uploadAction: (formData: FormData) => Promise<void>;
+  label?: string;
+  pickerText?: string;
+  hint?: string;
 };
 
-export default function LogoForm({ uploadAction }: Props) {
+export default function LogoForm({
+  uploadAction,
+  label = "Guardar",
+  pickerText = "Click para elegir imagen",
+  hint = "JPG, PNG, WebP, AVIF · máx 5MB",
+}: Props) {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -32,10 +43,16 @@ export default function LogoForm({ uploadAction }: Props) {
     <form
       ref={formRef}
       action={async (fd) => {
-        await uploadAction(fd);
-        formRef.current?.reset();
-        setPreview(null);
-        setFileName("");
+        setError(null);
+        try {
+          await uploadAction(fd);
+          formRef.current?.reset();
+          setPreview(null);
+          setFileName("");
+          router.refresh();
+        } catch (e) {
+          setError(e instanceof Error ? e.message : "Error al subir");
+        }
       }}
       className={imgStyles.form}
     >
@@ -49,8 +66,8 @@ export default function LogoForm({ uploadAction }: Props) {
         ) : (
           <div className={imgStyles.placeholder}>
             <span className={imgStyles.icon}>＋</span>
-            <span>Click para elegir logo</span>
-            <small>JPG, PNG, WebP, AVIF · máx 5MB</small>
+            <span>{pickerText}</span>
+            <small>{hint}</small>
           </div>
         )}
       </button>
@@ -65,10 +82,15 @@ export default function LogoForm({ uploadAction }: Props) {
       />
 
       <div className={imgStyles.row}>
-        <SubmitButton pendingLabel="Subiendo...">Guardar logo</SubmitButton>
+        <SubmitButton pendingLabel="Subiendo...">{label}</SubmitButton>
       </div>
 
       {fileName && <p className={imgStyles.fileName}>{fileName}</p>}
+      {error && (
+        <p style={{ color: "#b8362a", fontSize: "0.85rem", marginTop: "0.5rem" }}>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

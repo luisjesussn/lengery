@@ -42,14 +42,19 @@ export default async function SettingsPage() {
           </div>
         )}
 
-        <LogoForm uploadAction={uploadHeaderLogoAction} />
+        <LogoForm
+          uploadAction={uploadHeaderLogoAction}
+          label="Guardar logo"
+          pickerText="Click para elegir logo"
+          hint="JPG, PNG, WebP, AVIF · máx 5MB"
+        />
       </section>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Imagen del Hero (home)</h2>
         <p className={styles.help}>
           Imagen mostrada en el banner principal del home, al lado del título. Recomendado:
-          JPG/WebP, formato 4:5 o 1:1, ~1200px ancho. Máx 8MB.
+          JPG/WebP, formato 4:5 o 1:1, ~1200px ancho. Máx 4MB.
         </p>
 
         {heroUrl && (
@@ -66,7 +71,12 @@ export default async function SettingsPage() {
           </div>
         )}
 
-        <LogoForm uploadAction={uploadHeroImageAction} />
+        <LogoForm
+          uploadAction={uploadHeroImageAction}
+          label="Guardar imagen"
+          pickerText="Click para elegir imagen del Hero"
+          hint="JPG, PNG, WebP, AVIF · máx 4MB"
+        />
       </section>
     </div>
   );

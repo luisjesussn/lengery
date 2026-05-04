@@ -50,6 +50,7 @@ export default function Hero({ imageUrl }: Props) {
 
         {hasImage && imageUrl && (
           <div className={styles.media}>
+            <span className={styles.mediaTag}>Nueva colección</span>
             <Image
               src={imageUrl}
               alt=""
