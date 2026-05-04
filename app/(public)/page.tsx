@@ -2,18 +2,22 @@ import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
 import Reveal from "@/components/Reveal";
 import { prisma } from "@/lib/db";
+import { SETTING_KEYS, getSetting } from "@/lib/settings";
 import styles from "./home.module.css";
 
 export default async function HomePage() {
-  const featured = await prisma.product.findMany({
-    where: { active: true, featured: true },
-    include: { images: { orderBy: { order: "asc" } }, variants: true },
-    take: 8,
-  });
+  const [featured, heroImageUrl] = await Promise.all([
+    prisma.product.findMany({
+      where: { active: true, featured: true },
+      include: { images: { orderBy: { order: "asc" } }, variants: true },
+      take: 8,
+    }),
+    getSetting(SETTING_KEYS.HERO_IMAGE_URL),
+  ]);
 
   return (
     <>
-      <Hero />
+      <Hero imageUrl={heroImageUrl} />
 
       <section className={`container ${styles.section}`}>
         <Reveal>

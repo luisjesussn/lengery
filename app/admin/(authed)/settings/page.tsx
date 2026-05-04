@@ -1,13 +1,18 @@
 import { SETTING_KEYS, getSetting } from "@/lib/settings";
 import {
   removeHeaderLogoAction,
+  removeHeroImageAction,
   uploadHeaderLogoAction,
+  uploadHeroImageAction,
 } from "../../actions";
 import LogoForm from "./LogoForm";
 import styles from "./settings.module.css";
 
 export default async function SettingsPage() {
-  const logoUrl = await getSetting(SETTING_KEYS.HEADER_LOGO_URL);
+  const [logoUrl, heroUrl] = await Promise.all([
+    getSetting(SETTING_KEYS.HEADER_LOGO_URL),
+    getSetting(SETTING_KEYS.HERO_IMAGE_URL),
+  ]);
 
   return (
     <div className={styles.page}>
@@ -38,6 +43,30 @@ export default async function SettingsPage() {
         )}
 
         <LogoForm uploadAction={uploadHeaderLogoAction} />
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Imagen del Hero (home)</h2>
+        <p className={styles.help}>
+          Imagen mostrada en el banner principal del home, al lado del título. Recomendado:
+          JPG/WebP, formato 4:5 o 1:1, ~1200px ancho. Máx 8MB.
+        </p>
+
+        {heroUrl && (
+          <div className={styles.currentLarge}>
+            <span className={styles.label}>Actual</span>
+            <div className={styles.previewLarge}>
+              <img src={heroUrl} alt="Hero actual" />
+            </div>
+            <form action={removeHeroImageAction}>
+              <button type="submit" className={styles.removeBtn}>
+                Quitar imagen
+              </button>
+            </form>
+          </div>
+        )}
+
+        <LogoForm uploadAction={uploadHeroImageAction} />
       </section>
     </div>
   );

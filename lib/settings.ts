@@ -4,6 +4,7 @@ import { prisma } from "./db";
 
 export const SETTING_KEYS = {
   HEADER_LOGO_URL: "header_logo_url",
+  HERO_IMAGE_URL: "hero_image_url",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

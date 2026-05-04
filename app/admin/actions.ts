@@ -311,3 +311,35 @@ export async function removeHeaderLogoAction(): Promise<void> {
   await deleteSetting(SETTING_KEYS.HEADER_LOGO_URL);
   revalidatePath("/", "layout");
 }
+
+const MAX_HERO_BYTES = 8 * 1024 * 1024;
+
+export async function uploadHeroImageAction(formData: FormData): Promise<void> {
+  await requireAuth();
+  const file = formData.get("file") as File | null;
+  if (!file || !file.size) {
+    throw new Error("Falta archivo");
+  }
+  if (file.size > MAX_HERO_BYTES) {
+    throw new Error(`Archivo demasiado grande (máx ${MAX_HERO_BYTES / 1024 / 1024}MB)`);
+  }
+
+  const buf = Buffer.from(await file.arrayBuffer());
+  const detected = detectImageMime(buf);
+  if (!detected) {
+    throw new Error("Tipo de imagen no soportado (jpg, png, webp, avif)");
+  }
+  const ext = EXT_BY_MIME[detected];
+  const path = `site/hero-${Date.now()}${ext}`;
+
+  const url = await storageUploadImage(path, buf, detected);
+  await setSetting(SETTING_KEYS.HERO_IMAGE_URL, url);
+
+  revalidatePath("/", "layout");
+}
+
+export async function removeHeroImageAction(): Promise<void> {
+  await requireAuth();
+  await deleteSetting(SETTING_KEYS.HERO_IMAGE_URL);
+  revalidatePath("/", "layout");
+}
