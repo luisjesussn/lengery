@@ -21,6 +21,7 @@ import {
   deleteFolder as storageDeleteFolder,
   pathFromPublicUrl,
 } from "@/lib/storage";
+import { SETTING_KEYS, deleteSetting, setSetting } from "@/lib/settings";
 
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").toLowerCase().trim();
@@ -278,4 +279,35 @@ export async function deleteImageAction(formData: FormData): Promise<void> {
   }
 
   revalidatePath(`/admin/productos/${productId}`);
+}
+
+
+export async function uploadHeaderLogoAction(formData: FormData): Promise<void> {
+  await requireAuth();
+  const file = formData.get("file") as File | null;
+  if (!file || !file.size) {
+    throw new Error("Falta archivo");
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error(`Archivo demasiado grande (máx ${MAX_UPLOAD_BYTES / 1024 / 1024}MB)`);
+  }
+
+  const buf = Buffer.from(await file.arrayBuffer());
+  const detected = detectImageMime(buf);
+  if (!detected) {
+    throw new Error("Tipo de imagen no soportado (jpg, png, webp, avif)");
+  }
+  const ext = EXT_BY_MIME[detected];
+  const path = `site/header-logo-${Date.now()}${ext}`;
+
+  const url = await storageUploadImage(path, buf, detected);
+  await setSetting(SETTING_KEYS.HEADER_LOGO_URL, url);
+
+  revalidatePath("/", "layout");
+}
+
+export async function removeHeaderLogoAction(): Promise<void> {
+  await requireAuth();
+  await deleteSetting(SETTING_KEYS.HEADER_LOGO_URL);
+  revalidatePath("/", "layout");
 }

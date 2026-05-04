@@ -15,6 +15,7 @@ type Props = {
 const NAV = [
   { href: "/admin", label: "Productos", exact: true },
   { href: "/admin/productos/nuevo", label: "+ Nuevo producto", exact: false },
+  { href: "/admin/settings", label: "Configuración", exact: false },
 ];
 
 export default function AdminShell({ user, logoutAction, logoutAllAction, children }: Props) {
