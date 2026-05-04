@@ -1,5 +1,6 @@
 "use client";
 
+import NextImage from "next/image";
 import { useState, useRef, useMemo } from "react";
 import type { Image as ImageType } from "@prisma/client";
 import styles from "./ProductGallery.module.css";
@@ -103,7 +104,13 @@ export default function ProductGallery({ images, alt }: { images: ImageType[]; a
               onClick={() => setActive(i)}
               aria-label={`Imagen ${i + 1}`}
             >
-              <img src={img.url} alt={img.alt ?? alt} loading="lazy" />
+              <NextImage
+                src={img.url}
+                alt={img.alt ?? alt}
+                fill
+                sizes="80px"
+                loading="lazy"
+              />
             </button>
           ))}
         </div>
@@ -113,9 +120,13 @@ export default function ProductGallery({ images, alt }: { images: ImageType[]; a
           onMouseMove={onMouseMove}
           onMouseLeave={() => setZoomPos(null)}
         >
-          <img
+          <NextImage
+            key={current.id}
             src={current.url}
             alt={current.alt ?? alt}
+            fill
+            sizes="(max-width: 720px) 100vw, (max-width: 1280px) 60vw, 720px"
+            priority
             className={styles.mainImg}
             style={
               zoomPos

@@ -37,20 +37,6 @@ export default async function HomePage() {
             <div className={styles.trustItem}>
               <span className={styles.trustIcon}>✦</span>
               <div>
-                <p className={styles.trustTitle}>Envío rápido</p>
-                <p className={styles.trustText}>3–5 días a CABA y GBA</p>
-              </div>
-            </div>
-            <div className={styles.trustItem}>
-              <span className={styles.trustIcon}>✦</span>
-              <div>
-                <p className={styles.trustTitle}>Cambios garantizados</p>
-                <p className={styles.trustText}>Si no te queda, lo cambiamos</p>
-              </div>
-            </div>
-            <div className={styles.trustItem}>
-              <span className={styles.trustIcon}>✦</span>
-              <div>
                 <p className={styles.trustTitle}>Pedido por WhatsApp</p>
                 <p className={styles.trustText}>Atención personalizada</p>
               </div>

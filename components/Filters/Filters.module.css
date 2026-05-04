@@ -54,3 +54,112 @@
   font-size: 0.9rem;
   cursor: pointer;
 }
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-fg);
+  white-space: nowrap;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition);
+}
+
+.toggleActive {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-fg);
+}
+
+.checkInput {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .sidebar {
+    position: sticky;
+    top: 56px;
+    z-index: 20;
+    margin: 0 calc(var(--space-md) * -1);
+    padding: 0.6rem var(--space-md);
+    background: rgba(250, 246, 241, 0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .group {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .title {
+    display: none;
+  }
+
+  .list {
+    flex-direction: row;
+    gap: 0.4rem;
+  }
+
+  .option {
+    width: auto;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    transition:
+      background var(--transition),
+      color var(--transition),
+      border-color var(--transition);
+  }
+
+  .option:hover {
+    color: inherit;
+  }
+
+  .active {
+    background: var(--color-fg);
+    border-color: var(--color-fg);
+    color: var(--color-bg);
+    font-weight: 500;
+  }
+
+  .divider {
+    width: 1px;
+    align-self: stretch;
+    margin: 0.2rem 0.15rem;
+    background: var(--color-border);
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 721px) {
+  .divider {
+    display: none;
+  }
+}

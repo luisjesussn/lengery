@@ -16,8 +16,8 @@ export default function Header() {
           Intima
         </Link>
         <nav className={styles.nav}>
-          <Link href="/productos">Catálogo</Link>
-          <Link href="/productos?featured=1">Destacados</Link>
+          <Link href="/productos" className={styles.navLink}>Catálogo</Link>
+          <Link href="/productos?featured=1" className={styles.navLink}>Destacados</Link>
         </nav>
         <div className={styles.actions}>
           <button

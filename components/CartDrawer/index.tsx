@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
 import { useCurrency } from "@/lib/currency-context";
 import { calculateFinalPriceUSD, formatARS, formatUSD } from "@/lib/pricing";
@@ -54,7 +55,12 @@ export default function CartDrawer() {
                   <li key={`${it.productId}-${it.size}-${it.color ?? ""}`} className={styles.item}>
                     <div className={styles.thumb}>
                       {it.imageUrl ? (
-                        <img src={it.imageUrl} alt={it.name} />
+                        <Image
+                          src={it.imageUrl}
+                          alt={it.name}
+                          fill
+                          sizes="80px"
+                        />
                       ) : (
                         <div className={styles.thumbEmpty} />
                       )}

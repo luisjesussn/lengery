@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import PriceTag from "@/components/PriceTag";
 import type { ProductWithRelations } from "@/lib/types";
@@ -29,7 +30,16 @@ function colorSwatch(name: string): string {
   return COLOR_MAP[k] ?? "linear-gradient(135deg, #d4b89a, #c4756a)";
 }
 
-export default function ProductCard({ product }: { product: ProductWithRelations }) {
+const CARD_SIZES =
+  "(max-width: 360px) 100vw, (max-width: 720px) 50vw, (max-width: 1280px) 33vw, 280px";
+
+export default function ProductCard({
+  product,
+  priority = false,
+}: {
+  product: ProductWithRelations;
+  priority?: boolean;
+}) {
   const primary = product.images[0];
   const secondary = product.images[1];
   const colors = Array.from(
@@ -39,18 +49,26 @@ export default function ProductCard({ product }: { product: ProductWithRelations
   return (
     <Link href={`/productos/${product.slug}`} className={styles.card}>
       <div className={styles.imageWrap}>
+        {product.featured && <span className={styles.featuredBadge}>Destacado</span>}
+
         {primary ? (
           <>
-            <img
+            <Image
               src={primary.url}
               alt={primary.alt ?? product.name}
+              fill
+              sizes={CARD_SIZES}
               className={`${styles.img} ${styles.imgPrimary}`}
-              loading="lazy"
+              priority={priority}
+              loading={priority ? undefined : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
             />
             {secondary && (
-              <img
+              <Image
                 src={secondary.url}
                 alt={secondary.alt ?? product.name}
+                fill
+                sizes={CARD_SIZES}
                 className={`${styles.img} ${styles.imgSecondary}`}
                 loading="lazy"
               />
@@ -63,6 +81,7 @@ export default function ProductCard({ product }: { product: ProductWithRelations
         )}
 
         <span className={styles.shine} aria-hidden="true" />
+        <span className={styles.quickView} aria-hidden="true">Ver producto</span>
       </div>
 
       <div className={styles.body}>

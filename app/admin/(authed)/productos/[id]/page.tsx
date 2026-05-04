@@ -11,6 +11,9 @@ import {
   updateImageAction,
   deleteImageAction,
 } from "../../../actions";
+import SubmitButton from "@/components/admin/SubmitButton";
+import DeleteForm from "@/components/admin/DeleteForm";
+import ImageUploadForm from "@/components/admin/ImageUploadForm";
 import styles from "../../../admin.module.css";
 
 type Params = Promise<{ id: string }>;
@@ -31,20 +34,20 @@ export default async function EditProductPage({ params }: { params: Params }) {
       <header className={styles.pageHead}>
         <div>
           <h1 className={styles.pageTitle}>{product.name}</h1>
-          <p style={{ color: "var(--color-muted)", fontSize: "0.85rem" }}>
-            <Link href="/admin">← Volver</Link> · slug: {product.slug}
+          <p className={styles.crumb}>
+            <Link href="/admin">← Productos</Link>
+            <span className={styles.crumbSep}>·</span>
+            <span className={styles.crumbMuted}>slug: {product.slug}</span>
           </p>
         </div>
-        <form action={deleteProductAction}>
-          <input type="hidden" name="id" value={product.id} />
-          <button
-            type="submit"
-            className={`${styles.btn} ${styles.btnDanger}`}
-            formNoValidate
-          >
-            Eliminar producto
-          </button>
-        </form>
+        <DeleteForm
+          action={deleteProductAction}
+          hidden={{ id: product.id }}
+          confirmMessage={`¿Eliminar "${product.name}"? Se borran todas sus variantes e imágenes. Acción irreversible.`}
+          pendingLabel="Eliminando..."
+        >
+          Eliminar producto
+        </DeleteForm>
       </header>
 
       <form action={updateProductAction} className={styles.form}>
@@ -99,9 +102,7 @@ export default async function EditProductPage({ params }: { params: Params }) {
         </label>
 
         <div className={styles.formActions}>
-          <button type="submit" className={styles.btn}>
-            Guardar cambios
-          </button>
+          <SubmitButton pendingLabel="Guardando...">Guardar cambios</SubmitButton>
         </div>
       </form>
 
@@ -115,11 +116,11 @@ export default async function EditProductPage({ params }: { params: Params }) {
           <input type="text" name="size" placeholder="Talle (S, M, 8(L)...)" required />
           <input type="text" name="color" placeholder="Color (opcional)" />
           <input type="number" name="stock" placeholder="Stock" defaultValue="1" min="0" />
-          <button type="submit" className={styles.btn}>+ Agregar</button>
+          <SubmitButton pendingLabel="Agregando...">+ Agregar</SubmitButton>
         </form>
 
         {product.variants.length === 0 ? (
-          <p className={styles.empty}>Sin variantes</p>
+          <p className={styles.empty}>Sin variantes. Agregá la primera arriba ↑</p>
         ) : (
           <table className={styles.table} style={{ marginTop: "1rem" }}>
             <thead>
@@ -146,22 +147,19 @@ export default async function EditProductPage({ params }: { params: Params }) {
                         min="0"
                         style={{ width: 80 }}
                       />
-                      <button type="submit" className={`${styles.btn} ${styles.btnGhost}`}>
+                      <SubmitButton variant="ghost" pendingLabel="...">
                         Guardar
-                      </button>
+                      </SubmitButton>
                     </form>
                   </td>
                   <td>
-                    <form action={deleteVariantAction}>
-                      <input type="hidden" name="id" value={v.id} />
-                      <input type="hidden" name="productId" value={product.id} />
-                      <button
-                        type="submit"
-                        className={`${styles.btn} ${styles.btnDanger}`}
-                      >
-                        Eliminar
-                      </button>
-                    </form>
+                    <DeleteForm
+                      action={deleteVariantAction}
+                      hidden={{ id: v.id, productId: product.id }}
+                      confirmMessage={`¿Eliminar variante ${v.size}${v.color ? ` ${v.color}` : ""}?`}
+                    >
+                      Eliminar
+                    </DeleteForm>
                   </td>
                 </tr>
               ))}
@@ -175,19 +173,10 @@ export default async function EditProductPage({ params }: { params: Params }) {
           <h2 className={styles.sectionTitle}>Imágenes ({product.images.length})</h2>
         </header>
 
-        <form
-          action={uploadImageAction}
-          className={styles.inlineForm}
-          encType="multipart/form-data"
-        >
-          <input type="hidden" name="productId" value={product.id} />
-          <input type="file" name="file" accept="image/*" required />
-          <input type="text" name="color" placeholder="Color (opcional)" />
-          <button type="submit" className={styles.btn}>Subir</button>
-        </form>
+        <ImageUploadForm action={uploadImageAction} productId={product.id} />
 
         {product.images.length === 0 ? (
-          <p className={styles.empty}>Sin imágenes</p>
+          <p className={styles.empty}>Sin imágenes. Subí la primera arriba ↑</p>
         ) : (
           <div className={styles.imageGrid}>
             {product.images.map((img) => (
@@ -209,21 +198,18 @@ export default async function EditProductPage({ params }: { params: Params }) {
                     min="0"
                     style={{ width: 60 }}
                   />
-                  <button type="submit" className={`${styles.btn} ${styles.btnGhost}`}>
+                  <SubmitButton variant="ghost" pendingLabel="...">
                     Guardar
-                  </button>
+                  </SubmitButton>
                 </form>
-                <form action={deleteImageAction}>
-                  <input type="hidden" name="id" value={img.id} />
-                  <input type="hidden" name="productId" value={product.id} />
-                  <button
-                    type="submit"
-                    className={`${styles.btn} ${styles.btnDanger}`}
-                    style={{ width: "100%" }}
-                  >
-                    Eliminar
-                  </button>
-                </form>
+                <DeleteForm
+                  action={deleteImageAction}
+                  hidden={{ id: img.id, productId: product.id }}
+                  confirmMessage="¿Eliminar esta imagen? También se borra del Storage."
+                  fullWidth
+                >
+                  Eliminar
+                </DeleteForm>
               </div>
             ))}
           </div>

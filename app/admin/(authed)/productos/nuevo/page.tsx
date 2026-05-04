@@ -1,11 +1,18 @@
+import Link from "next/link";
 import { createProductAction } from "../../../actions";
+import SubmitButton from "@/components/admin/SubmitButton";
 import styles from "../../../admin.module.css";
 
 export default function NewProductPage() {
   return (
     <div className={styles.page}>
       <header className={styles.pageHead}>
-        <h1 className={styles.pageTitle}>Nuevo producto</h1>
+        <div>
+          <h1 className={styles.pageTitle}>Nuevo producto</h1>
+          <p className={styles.crumb}>
+            <Link href="/admin">← Productos</Link>
+          </p>
+        </div>
       </header>
 
       <form action={createProductAction} className={styles.form}>
@@ -46,9 +53,7 @@ export default function NewProductPage() {
         </label>
 
         <div className={styles.formActions}>
-          <button type="submit" className={styles.btn}>
-            Crear
-          </button>
+          <SubmitButton pendingLabel="Creando...">Crear producto</SubmitButton>
         </div>
       </form>
     </div>

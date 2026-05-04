@@ -20,7 +20,9 @@ export default function Filters({ categories, activeCategory, featuredOnly }: Pr
       const sp = new URLSearchParams(params.toString());
       if (value === null) sp.delete(key);
       else sp.set(key, value);
-      router.push(`${pathname}?${sp.toString()}`);
+      sp.delete("page");
+      const qs = sp.toString();
+      router.push(qs ? `${pathname}?${qs}` : pathname);
     },
     [params, pathname, router]
   );
@@ -51,15 +53,18 @@ export default function Filters({ categories, activeCategory, featuredOnly }: Pr
         </ul>
       </div>
 
+      <span className={styles.divider} aria-hidden="true" />
+
       <div className={styles.group}>
         <h4 className={styles.title}>Filtros</h4>
-        <label className={styles.checkbox}>
+        <label className={`${styles.toggle} ${featuredOnly ? styles.toggleActive : ""}`}>
           <input
             type="checkbox"
+            className={styles.checkInput}
             checked={featuredOnly}
             onChange={(e) => update("featured", e.target.checked ? "1" : null)}
           />
-          Solo destacados
+          ★ Destacados
         </label>
       </div>
     </aside>

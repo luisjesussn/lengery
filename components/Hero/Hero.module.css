@@ -208,3 +208,62 @@
   text-transform: uppercase;
   color: var(--color-muted);
 }
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 0;
+  }
+
+  .inner {
+    padding: var(--space-lg) var(--space-md) var(--space-md);
+  }
+
+  .eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 0.85rem;
+  }
+
+  .title {
+    font-size: clamp(2.4rem, 13vw, 3.5rem);
+    margin-bottom: 0.85rem;
+  }
+
+  .lead {
+    font-size: 0.95rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .actions {
+    gap: 0.6rem;
+  }
+
+  .cta,
+  .ctaGhost {
+    padding: 0.85rem 1.5rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+  }
+
+  .scrollHint {
+    display: none;
+  }
+
+  .orb1 {
+    width: 280px;
+    height: 280px;
+    top: -80px;
+    left: -60px;
+  }
+
+  .orb2 {
+    width: 240px;
+    height: 240px;
+    bottom: -80px;
+  }
+
+  .orb3 {
+    width: 200px;
+    height: 200px;
+  }
+}

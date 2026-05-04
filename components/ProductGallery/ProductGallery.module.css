@@ -68,6 +68,7 @@
 }
 
 .thumb {
+  position: relative;
   aspect-ratio: 4 / 5;
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
