@@ -2,9 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { writeFile, mkdir, unlink, readdir } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import { resolve, join, extname } from "node:path";
+import { extname } from "node:path";
 import { prisma } from "@/lib/db";
 import {
   createSession,
@@ -13,6 +11,12 @@ import {
   requireAuth,
   verifyPassword,
 } from "@/lib/auth";
+import {
+  uploadImage as storageUploadImage,
+  deleteImage as storageDeleteImage,
+  deleteFolder as storageDeleteFolder,
+  pathFromPublicUrl,
+} from "@/lib/storage";
 
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").toLowerCase().trim();
@@ -103,11 +107,7 @@ export async function deleteProductAction(formData: FormData): Promise<void> {
   const product = await prisma.product.findUnique({ where: { id } });
   if (!product) return;
 
-  const dir = resolve(process.cwd(), "public", "products", product.slug);
-  if (existsSync(dir)) {
-    const files = await readdir(dir);
-    for (const f of files) await unlink(join(dir, f)).catch(() => {});
-  }
+  await storageDeleteFolder(product.slug).catch(() => {});
 
   await prisma.product.delete({ where: { id } });
   revalidatePath("/admin");
@@ -148,6 +148,14 @@ export async function deleteVariantAction(formData: FormData): Promise<void> {
   revalidatePath(`/admin/productos/${productId}`);
 }
 
+const MIME: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".avif": "image/avif",
+};
+
 export async function uploadImageAction(formData: FormData): Promise<void> {
   await requireAuth();
   const productId = String(formData.get("productId") ?? "");
@@ -159,23 +167,23 @@ export async function uploadImageAction(formData: FormData): Promise<void> {
   const product = await prisma.product.findUnique({ where: { id: productId } });
   if (!product) return;
 
-  const dir = resolve(process.cwd(), "public", "products", product.slug);
-  if (!existsSync(dir)) await mkdir(dir, { recursive: true });
-
   const ext = extname(file.name).toLowerCase() || ".jpg";
+  const contentType = MIME[ext] ?? file.type ?? "image/jpeg";
   const last = await prisma.image.findFirst({
     where: { productId },
     orderBy: { order: "desc" },
   });
   const order = (last?.order ?? -1) + 1;
   const dstName = `up-${Date.now()}${ext}`;
+  const path = `${product.slug}/${dstName}`;
   const buf = Buffer.from(await file.arrayBuffer());
-  await writeFile(join(dir, dstName), buf);
+
+  const url = await storageUploadImage(path, buf, contentType);
 
   await prisma.image.create({
     data: {
       productId,
-      url: `/products/${product.slug}/${dstName}`,
+      url,
       alt: product.name,
       color,
       order,
@@ -203,8 +211,8 @@ export async function deleteImageAction(formData: FormData): Promise<void> {
 
   const img = await prisma.image.findUnique({ where: { id } });
   if (img) {
-    const filePath = resolve(process.cwd(), "public", img.url.replace(/^\//, ""));
-    await unlink(filePath).catch(() => {});
+    const path = pathFromPublicUrl(img.url);
+    if (path) await storageDeleteImage(path).catch(() => {});
     await prisma.image.delete({ where: { id } });
   }
 
