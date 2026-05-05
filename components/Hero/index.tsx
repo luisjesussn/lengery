@@ -1,12 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getSiteConfig } from "@/lib/settings";
 import styles from "./Hero.module.css";
 
-type Props = {
-  imageUrl?: string | null;
-};
-
-export default function Hero({ imageUrl }: Props) {
+export default async function Hero() {
+  const cfg = await getSiteConfig();
+  const imageUrl = cfg.heroImageUrl;
   const hasImage = Boolean(imageUrl);
 
   return (
@@ -21,36 +20,33 @@ export default function Hero({ imageUrl }: Props) {
         <div className={styles.copy}>
           <p className={styles.eyebrow}>
             <span className={styles.dot} />
-            Nueva temporada · Importado
+            {cfg.heroEyebrow}
           </p>
 
           <h1 className={styles.title}>
-            <span className={`${styles.line} ${styles.line1}`}>Lencería</span>
+            <span className={`${styles.line} ${styles.line1}`}>{cfg.heroTitleLine1}</span>
             <span className={`${styles.line} ${styles.line2}`}>
-              <em>curada</em>
+              <em>{cfg.heroTitleLine2}</em>
             </span>
-            <span className={`${styles.line} ${styles.line3}`}>para vos.</span>
+            <span className={`${styles.line} ${styles.line3}`}>{cfg.heroTitleLine3}</span>
           </h1>
 
-          <p className={styles.lead}>
-            Selección importada de conjuntos, bralettes y piezas únicas. Calidad premium,
-            precios honestos.
-          </p>
+          <p className={styles.lead}>{cfg.heroLead}</p>
 
           <div className={styles.actions}>
-            <Link href="/productos" className={styles.cta}>
-              Ver catálogo
+            <Link href={cfg.heroCtaHref} className={styles.cta}>
+              {cfg.heroCtaLabel}
               <span className={styles.arrow}>→</span>
             </Link>
-            <Link href="/productos?featured=1" className={styles.ctaGhost}>
-              Destacados
+            <Link href={cfg.heroCtaGhostHref} className={styles.ctaGhost}>
+              {cfg.heroCtaGhostLabel}
             </Link>
           </div>
         </div>
 
         {hasImage && imageUrl && (
           <div className={styles.media}>
-            <span className={styles.mediaTag}>Nueva colección</span>
+            <span className={styles.mediaTag}>{cfg.heroMediaTag}</span>
             <Image
               src={imageUrl}
               alt=""

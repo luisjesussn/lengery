@@ -8,7 +8,7 @@ export default function ProductInfo({ product }: { product: ProductWithRelations
     <div className={styles.info}>
       <p className={styles.category}>{product.category}</p>
       <h1 className={styles.name}>{product.name}</h1>
-      <PriceTag costUSD={product.costUSD} marginPct={product.marginPct} size="lg" />
+      <PriceTag costUSD={product.costUSD} size="lg" />
       {product.description && <p className={styles.desc}>{product.description}</p>}
       <VariantSelector product={product} />
     </div>

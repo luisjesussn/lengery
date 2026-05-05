@@ -21,7 +21,14 @@ import {
   deleteFolder as storageDeleteFolder,
   pathFromPublicUrl,
 } from "@/lib/storage";
-import { SETTING_KEYS, deleteSetting, setSetting } from "@/lib/settings";
+import {
+  SETTING_KEYS,
+  type SettingKey,
+  type NavLink,
+  deleteSetting,
+  setSetting,
+  setSettings,
+} from "@/lib/settings";
 
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").toLowerCase().trim();
@@ -78,11 +85,10 @@ export async function createProductAction(formData: FormData): Promise<void> {
   const category = String(formData.get("category") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim() || null;
   const costUSD = Number(formData.get("costUSD"));
-  const marginPct = Number(formData.get("marginPct"));
   const featured = formData.get("featured") === "on";
   const active = formData.get("active") !== "off";
 
-  if (!name || !category || !Number.isFinite(costUSD) || !Number.isFinite(marginPct)) {
+  if (!name || !category || !Number.isFinite(costUSD)) {
     throw new Error("Datos inválidos");
   }
 
@@ -94,7 +100,7 @@ export async function createProductAction(formData: FormData): Promise<void> {
   }
 
   const product = await prisma.product.create({
-    data: { name, category, description, costUSD, marginPct, featured, active, slug },
+    data: { name, category, description, costUSD, featured, active, slug },
   });
 
   revalidatePath("/admin");
@@ -108,13 +114,12 @@ export async function updateProductAction(formData: FormData): Promise<void> {
   const category = String(formData.get("category") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim() || null;
   const costUSD = Number(formData.get("costUSD"));
-  const marginPct = Number(formData.get("marginPct"));
   const featured = formData.get("featured") === "on";
   const active = formData.get("active") === "on";
 
   await prisma.product.update({
     where: { id },
-    data: { name, category, description, costUSD, marginPct, featured, active },
+    data: { name, category, description, costUSD, featured, active },
   });
 
   revalidatePath("/admin");
@@ -341,5 +346,101 @@ export async function uploadHeroImageAction(formData: FormData): Promise<void> {
 export async function removeHeroImageAction(): Promise<void> {
   await requireAuth();
   await deleteSetting(SETTING_KEYS.HERO_IMAGE_URL);
+  revalidatePath("/", "layout");
+}
+
+const TEXT_KEYS_BY_SECTION: Record<string, SettingKey[]> = {
+  brand: [
+    SETTING_KEYS.BRAND_NAME,
+    SETTING_KEYS.BRAND_TAGLINE,
+    SETTING_KEYS.SITE_TITLE,
+    SETTING_KEYS.SITE_DESCRIPTION,
+  ],
+  header: [SETTING_KEYS.CART_BUTTON_LABEL],
+  hero: [
+    SETTING_KEYS.HERO_EYEBROW,
+    SETTING_KEYS.HERO_TITLE_LINE_1,
+    SETTING_KEYS.HERO_TITLE_LINE_2,
+    SETTING_KEYS.HERO_TITLE_LINE_3,
+    SETTING_KEYS.HERO_LEAD,
+    SETTING_KEYS.HERO_CTA_LABEL,
+    SETTING_KEYS.HERO_CTA_HREF,
+    SETTING_KEYS.HERO_CTA_GHOST_LABEL,
+    SETTING_KEYS.HERO_CTA_GHOST_HREF,
+    SETTING_KEYS.HERO_MEDIA_TAG,
+  ],
+  home: [
+    SETTING_KEYS.HOME_SECTION_EYEBROW,
+    SETTING_KEYS.HOME_SECTION_TITLE_PRE,
+    SETTING_KEYS.HOME_SECTION_TITLE_EM,
+    SETTING_KEYS.HOME_SECTION_LEAD,
+    SETTING_KEYS.HOME_TRUST_TITLE,
+    SETTING_KEYS.HOME_TRUST_TEXT,
+  ],
+  footer: [SETTING_KEYS.FOOTER_BRAND, SETTING_KEYS.FOOTER_COPY],
+  contact: [SETTING_KEYS.WHATSAPP_PHONE, SETTING_KEYS.USD_ARS_RATE],
+  cart: [
+    SETTING_KEYS.CART_TITLE,
+    SETTING_KEYS.CART_EMPTY_TEXT,
+    SETTING_KEYS.CART_CHECKOUT_LABEL,
+    SETTING_KEYS.CART_CLEAR_LABEL,
+  ],
+};
+
+export async function updateSiteConfigSectionAction(formData: FormData): Promise<void> {
+  await requireAuth();
+  const section = String(formData.get("__section") ?? "");
+  const allowed = TEXT_KEYS_BY_SECTION[section];
+  if (!allowed) throw new Error("Sección inválida");
+
+  if (section === "contact") {
+    const phoneRaw = String(formData.get(SETTING_KEYS.WHATSAPP_PHONE) ?? "").trim();
+    const phone = phoneRaw.replace(/[^\d+]/g, "");
+    const rateRaw = String(formData.get(SETTING_KEYS.USD_ARS_RATE) ?? "").trim();
+    const rate = Number(rateRaw);
+    const entries: Array<[SettingKey, string]> = [];
+    const toDelete: SettingKey[] = [];
+    if (phone) entries.push([SETTING_KEYS.WHATSAPP_PHONE, phone]);
+    else toDelete.push(SETTING_KEYS.WHATSAPP_PHONE);
+    if (rateRaw && Number.isFinite(rate) && rate > 0) {
+      entries.push([SETTING_KEYS.USD_ARS_RATE, String(rate)]);
+    } else if (!rateRaw) {
+      toDelete.push(SETTING_KEYS.USD_ARS_RATE);
+    }
+    await setSettings(entries);
+    for (const k of toDelete) await deleteSetting(k);
+    revalidatePath("/", "layout");
+    return;
+  }
+
+  const entries: Array<[SettingKey, string]> = [];
+  const toDelete: SettingKey[] = [];
+  for (const key of allowed) {
+    const raw = formData.get(key);
+    if (raw === null) continue;
+    const value = String(raw).trim();
+    if (value) entries.push([key, value]);
+    else toDelete.push(key);
+  }
+  await setSettings(entries);
+  for (const k of toDelete) await deleteSetting(k);
+  revalidatePath("/", "layout");
+}
+
+export async function updateNavLinksAction(formData: FormData): Promise<void> {
+  await requireAuth();
+  const labels = formData.getAll("nav_label").map((v) => String(v).trim());
+  const hrefs = formData.getAll("nav_href").map((v) => String(v).trim());
+  const links: NavLink[] = [];
+  for (let i = 0; i < Math.max(labels.length, hrefs.length); i++) {
+    const label = labels[i] ?? "";
+    const href = hrefs[i] ?? "";
+    if (label && href) links.push({ label, href });
+  }
+  if (links.length === 0) {
+    await deleteSetting(SETTING_KEYS.NAV_LINKS);
+  } else {
+    await setSetting(SETTING_KEYS.NAV_LINKS, JSON.stringify(links));
+  }
   revalidatePath("/", "layout");
 }

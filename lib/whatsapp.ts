@@ -1,4 +1,4 @@
-import { calculateFinalPriceUSD, formatARS, formatUSD } from "./pricing";
+import { formatARS, formatUSD } from "./pricing";
 import type { Currency } from "./types";
 
 export type CartItem = {
@@ -9,7 +9,6 @@ export type CartItem = {
   size: string;
   color: string | null;
   costUSD: number;
-  marginPct: number;
   imageUrl: string | null;
   qty: number;
 };
@@ -23,8 +22,7 @@ export function buildWhatsAppMessage(
   let totalUSD = 0;
 
   items.forEach((it, i) => {
-    const unitUSD = calculateFinalPriceUSD(it.costUSD, it.marginPct);
-    const lineUSD = unitUSD * it.qty;
+    const lineUSD = it.costUSD * it.qty;
     totalUSD += lineUSD;
     const variant = [it.color, it.size].filter(Boolean).join(" / ");
     const price =

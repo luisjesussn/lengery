@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
+import { getSiteConfig } from "@/lib/settings";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,10 +16,13 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Intima — Lencería curada",
-  description: "Selección curada de lencería y conjuntos. Importado, calidad premium.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cfg = await getSiteConfig();
+  return {
+    title: cfg.siteTitle,
+    description: cfg.siteDescription,
+  };
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

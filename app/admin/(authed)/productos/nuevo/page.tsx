@@ -27,13 +27,8 @@ export default function NewProductPage() {
         </label>
 
         <label>
-          <span>Costo USD</span>
+          <span>Precio USD</span>
           <input type="number" name="costUSD" step="0.01" min="0" required />
-        </label>
-
-        <label>
-          <span>Margen (0.0 a 1.0)</span>
-          <input type="number" name="marginPct" step="0.05" min="0" max="3" defaultValue="0.8" required />
         </label>
 
         <div className={`${styles.checkboxRow} ${styles.span2}`}>

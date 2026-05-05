@@ -16,7 +16,6 @@ model Product {
   description String?
   category    String
   costUSD     Float
-  marginPct   Float     @default(0.5)
   active      Boolean   @default(true)
   featured    Boolean   @default(false)
   images      Image[]

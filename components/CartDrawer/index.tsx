@@ -3,26 +3,25 @@
 import Image from "next/image";
 import { useCart } from "@/lib/cart-context";
 import { useCurrency } from "@/lib/currency-context";
-import { calculateFinalPriceUSD, formatARS, formatUSD } from "@/lib/pricing";
+import { formatARS, formatUSD } from "@/lib/pricing";
 import { buildWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
+import { useSiteConfig } from "@/lib/site-config-context";
 import styles from "./CartDrawer.module.css";
 
 export default function CartDrawer() {
   const { items, isOpen, close, remove, setQty, clear, count } = useCart();
   const { currency, blueRate } = useCurrency();
+  const cfg = useSiteConfig();
 
   const fmt = (usd: number) =>
     currency === "USD" ? formatUSD(usd) : formatARS(usd, blueRate);
 
-  const totalUSD = items.reduce(
-    (s, it) => s + calculateFinalPriceUSD(it.costUSD, it.marginPct) * it.qty,
-    0
-  );
+  const totalUSD = items.reduce((s, it) => s + it.costUSD * it.qty, 0);
 
   const checkout = () => {
     if (items.length === 0) return;
     const msg = buildWhatsAppMessage(items, currency, blueRate);
-    window.open(buildWhatsAppUrl(msg), "_blank", "noopener");
+    window.open(buildWhatsAppUrl(msg, cfg.whatsappPhone), "_blank", "noopener");
   };
 
   return (
@@ -37,7 +36,7 @@ export default function CartDrawer() {
         aria-hidden={!isOpen}
       >
         <header className={styles.header}>
-          <h3 className={styles.title}>Tu carrito ({count})</h3>
+          <h3 className={styles.title}>{cfg.cartTitle} ({count})</h3>
           <button className={styles.iconBtn} onClick={close} aria-label="Cerrar">
             ✕
           </button>
@@ -45,11 +44,11 @@ export default function CartDrawer() {
 
         <div className={styles.body}>
           {items.length === 0 ? (
-            <p className={styles.empty}>Tu carrito está vacío.</p>
+            <p className={styles.empty}>{cfg.cartEmptyText}</p>
           ) : (
             <ul className={styles.list}>
               {items.map((it) => {
-                const unit = calculateFinalPriceUSD(it.costUSD, it.marginPct);
+                const unit = it.costUSD;
                 const variantLabel = [it.color, it.size].filter(Boolean).join(" / ");
                 return (
                   <li key={`${it.productId}-${it.size}-${it.color ?? ""}`} className={styles.item}>
@@ -107,10 +106,10 @@ export default function CartDrawer() {
               <span className={styles.totalAmount}>{fmt(totalUSD)}</span>
             </div>
             <button className={styles.checkoutBtn} onClick={checkout}>
-              Finalizar por WhatsApp
+              {cfg.cartCheckoutLabel}
             </button>
             <button className={styles.clearBtn} onClick={clear}>
-              Vaciar carrito
+              {cfg.cartClearLabel}
             </button>
           </footer>
         )}

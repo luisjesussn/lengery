@@ -89,7 +89,7 @@ export default function ProductCard({
         <h3 className={styles.name}>{product.name}</h3>
 
         <div className={styles.priceRow}>
-          <PriceTag costUSD={product.costUSD} marginPct={product.marginPct} size="sm" />
+          <PriceTag costUSD={product.costUSD} size="sm" />
         </div>
 
         {colors.length > 0 && (

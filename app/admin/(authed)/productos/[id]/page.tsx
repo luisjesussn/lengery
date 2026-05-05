@@ -64,23 +64,12 @@ export default async function EditProductPage({ params }: { params: Params }) {
         </label>
 
         <label>
-          <span>Costo USD</span>
+          <span>Precio USD</span>
           <input
             type="number"
             name="costUSD"
             step="0.01"
             defaultValue={product.costUSD}
-            required
-          />
-        </label>
-
-        <label>
-          <span>Margen</span>
-          <input
-            type="number"
-            name="marginPct"
-            step="0.05"
-            defaultValue={product.marginPct}
             required
           />
         </label>

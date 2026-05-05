@@ -59,8 +59,7 @@ export default async function AdminDashboard() {
                 <th></th>
                 <th>Nombre</th>
                 <th>Categoría</th>
-                <th>Costo USD</th>
-                <th>Margen</th>
+                <th>Precio USD</th>
                 <th>Var.</th>
                 <th>Img.</th>
                 <th>Estado</th>
@@ -82,7 +81,6 @@ export default async function AdminDashboard() {
                   <td className={styles.tdName}>{p.name}</td>
                   <td className={styles.tdMuted}>{p.category}</td>
                   <td>${p.costUSD.toFixed(2)}</td>
-                  <td>{(p.marginPct * 100).toFixed(0)}%</td>
                   <td>{p._count.variants}</td>
                   <td>{p._count.images}</td>
                   <td>

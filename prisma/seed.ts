@@ -14,13 +14,6 @@ function parseMoney(raw: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function parsePct(raw: string): number {
-  if (!raw) return 0;
-  const cleaned = raw.replace("%", "").replace(",", ".").trim();
-  const n = Number(cleaned);
-  return Number.isFinite(n) ? n / 100 : 0;
-}
-
 function slugify(s: string): string {
   return s
     .toLowerCase()
@@ -37,7 +30,6 @@ type Parsed = {
   color: string | null;
   size: string;
   costUSD: number;
-  marginPct: number;
 };
 
 function parseProductString(producto: string): { baseName: string; color: string | null; size: string } {
@@ -78,7 +70,6 @@ async function main() {
       color,
       size,
       costUSD: parseMoney(r[4]),
-      marginPct: parsePct(r[6]),
     };
   });
 
@@ -115,7 +106,6 @@ async function main() {
         name: first.baseName,
         category: first.category,
         costUSD: first.costUSD,
-        marginPct: first.marginPct,
         featured: created < 6,
         variants: {
           create: Array.from(variantMap.values()),

@@ -36,7 +36,6 @@ export default function VariantSelector({ product }: { product: ProductWithRelat
       size,
       color,
       costUSD: product.costUSD,
-      marginPct: product.marginPct,
       imageUrl: product.images[0]?.url ?? null,
     });
   };

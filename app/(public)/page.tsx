@@ -2,31 +2,31 @@ import Hero from "@/components/Hero";
 import ProductGrid from "@/components/ProductGrid";
 import Reveal from "@/components/Reveal";
 import { prisma } from "@/lib/db";
-import { SETTING_KEYS, getSetting } from "@/lib/settings";
+import { getSiteConfig } from "@/lib/settings";
 import styles from "./home.module.css";
 
 export default async function HomePage() {
-  const [featured, heroImageUrl] = await Promise.all([
+  const [featured, cfg] = await Promise.all([
     prisma.product.findMany({
       where: { active: true, featured: true },
       include: { images: { orderBy: { order: "asc" } }, variants: true },
       take: 8,
     }),
-    getSetting(SETTING_KEYS.HERO_IMAGE_URL),
+    getSiteConfig(),
   ]);
 
   return (
     <>
-      <Hero imageUrl={heroImageUrl} />
+      <Hero />
 
       <section className={`container ${styles.section}`}>
         <Reveal>
           <header className={styles.sectionHead}>
-            <p className={styles.eyebrow}>Selección</p>
+            <p className={styles.eyebrow}>{cfg.homeSectionEyebrow}</p>
             <h2 className={styles.title}>
-              Lo más <em>deseado</em>
+              {cfg.homeSectionTitlePre} <em>{cfg.homeSectionTitleEm}</em>
             </h2>
-            <p className={styles.lead}>Piezas curadas, listas para enviar.</p>
+            <p className={styles.lead}>{cfg.homeSectionLead}</p>
           </header>
         </Reveal>
 
@@ -41,8 +41,8 @@ export default async function HomePage() {
             <div className={styles.trustItem}>
               <span className={styles.trustIcon}>✦</span>
               <div>
-                <p className={styles.trustTitle}>Pedido por WhatsApp</p>
-                <p className={styles.trustText}>Atención personalizada</p>
+                <p className={styles.trustTitle}>{cfg.homeTrustTitle}</p>
+                <p className={styles.trustText}>{cfg.homeTrustText}</p>
               </div>
             </div>
           </div>
