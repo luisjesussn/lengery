@@ -23,7 +23,7 @@ export default function NewProductPage() {
 
         <label>
           <span>Categoría</span>
-          <input type="text" name="category" required placeholder="Ej: Paq 1 - Base SHEIN" />
+          <input type="text" name="category" required placeholder="Ej: Paq 1 - Base" />
         </label>
 
         <label>
