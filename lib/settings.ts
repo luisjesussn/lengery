@@ -95,9 +95,9 @@ export const DEFAULT_NAV_LINKS: NavLink[] = [
 
 export const SITE_CONFIG_DEFAULTS: SiteConfig = {
   brandName: "Intima",
-  brandTagline: "Lencería curada",
-  siteTitle: "Intima — Lencería curada",
-  siteDescription: "Selección curada de lencería y conjuntos. Importado, calidad premium.",
+  brandTagline: "Lencería ",
+  siteTitle: "Intima — Lencería ",
+  siteDescription: "Selección  de lencería y conjuntos. Importado, calidad premium.",
 
   headerLogoUrl: null,
   navLinks: DEFAULT_NAV_LINKS,
@@ -106,7 +106,7 @@ export const SITE_CONFIG_DEFAULTS: SiteConfig = {
   heroImageUrl: null,
   heroEyebrow: "Nueva temporada · Importado",
   heroTitleLine1: "Lencería",
-  heroTitleLine2: "curada",
+  heroTitleLine2: "",
   heroTitleLine3: "para vos.",
   heroLead:
     "Selección importada de conjuntos, bralettes y piezas únicas. Calidad premium, precios honestos.",
@@ -119,12 +119,12 @@ export const SITE_CONFIG_DEFAULTS: SiteConfig = {
   homeSectionEyebrow: "Selección",
   homeSectionTitlePre: "Lo más",
   homeSectionTitleEm: "deseado",
-  homeSectionLead: "Piezas curadas, listas para enviar.",
+  homeSectionLead: "Piezas s, listas para enviar.",
   homeTrustTitle: "Pedido por WhatsApp",
   homeTrustText: "Atención personalizada",
 
   footerBrand: "Intima",
-  footerCopy: "Lencería curada",
+  footerCopy: "Lencería ",
 
   whatsappPhone: process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "",
   usdArsRate: Number(process.env.NEXT_PUBLIC_USD_ARS ?? 1200),
